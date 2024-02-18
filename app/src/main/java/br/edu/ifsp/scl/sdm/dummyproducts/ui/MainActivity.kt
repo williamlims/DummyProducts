@@ -41,9 +41,9 @@ class MainActivity : AppCompatActivity() {
         ProductImageAdapter(this, productImageList)
     }
 
-    companion object {
-        const val PRODUCTS_ENDPOINT = "https://dummyjson.com/products"
-    }
+    //companion object {
+    //    const val PRODUCTS_ENDPOINT = "https://dummyjson.com/products"
+    //}
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(amb.root)
@@ -82,16 +82,28 @@ class MainActivity : AppCompatActivity() {
         retrieveProducts()
     }
 
-    private fun retrieveProducts() = StringRequest(Request.Method.GET, PRODUCTS_ENDPOINT,
-        { response ->
-            Gson().fromJson(response, ProductList::class.java).products.also {
+    private fun retrieveProducts() =
+        DummyJSONAPI.ProductListRequest({ productList ->
+            productList.products.also {
                 productAdapter.addAll(it)
             }
         }, {
             Toast.makeText(this, getString(R.string.request_problem), Toast.LENGTH_SHORT).show()
         }).also {
-        DummyJSONAPI.getInstance(this).addToRequestQueue(it)
-    }
+            DummyJSONAPI.getInstance(this).addToRequestQueue(it)
+        }
+
+    /* OLD MODE
+    StringRequest(Request.Method.GET, PRODUCTS_ENDPOINT,
+    { response ->
+        Gson().fromJson(response, ProductList::class.java).products.also {
+            productAdapter.addAll(it)
+        }
+    }, {
+        Toast.makeText(this, getString(R.string.request_problem), Toast.LENGTH_SHORT).show()
+    }).also {
+    DummyJSONAPI.getInstance(this).addToRequestQueue(it)
+    }*/
 
     /* OLD MODE
     private fun retrieveProducts() = Thread {
