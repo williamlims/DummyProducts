@@ -6,14 +6,19 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.edu.ifsp.scl.sdm.dummyproducts.R
 import br.edu.ifsp.scl.sdm.dummyproducts.adapter.ProductAdapter
 import br.edu.ifsp.scl.sdm.dummyproducts.adapter.ProductImageAdapter
 import br.edu.ifsp.scl.sdm.dummyproducts.databinding.ActivityMainBinding
+import br.edu.ifsp.scl.sdm.dummyproducts.model.DummyJSONAPI
 import br.edu.ifsp.scl.sdm.dummyproducts.model.Product
 import br.edu.ifsp.scl.sdm.dummyproducts.model.ProductList
+import com.android.volley.Request
+import com.android.volley.toolbox.ImageRequest
+import com.android.volley.toolbox.StringRequest
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import java.io.BufferedInputStream
@@ -77,6 +82,18 @@ class MainActivity : AppCompatActivity() {
         retrieveProducts()
     }
 
+    private fun retrieveProducts() = StringRequest(Request.Method.GET, PRODUCTS_ENDPOINT,
+        { response ->
+            Gson().fromJson(response, ProductList::class.java).products.also {
+                productAdapter.addAll(it)
+            }
+        }, {
+            Toast.makeText(this, getString(R.string.request_problem), Toast.LENGTH_SHORT).show()
+        }).also {
+        DummyJSONAPI.getInstance(this).addToRequestQueue(it)
+    }
+
+    /* OLD MODE
     private fun retrieveProducts() = Thread {
         val productsConnection = URL(PRODUCTS_ENDPOINT).openConnection() as HttpURLConnection
         try {
@@ -96,8 +113,21 @@ class MainActivity : AppCompatActivity() {
         } finally {
             productsConnection.disconnect()
         }
-    }.start()
+    }.start()*/
 
+    private fun retrieveProductImages(product: Product) =
+        product.images.forEach { imageUrl ->
+            ImageRequest(imageUrl, { response ->
+                productImageList.add(response)
+                productImageAdapter.notifyItemInserted(productImageList.lastIndex)
+            }, 0, 0, ImageView.ScaleType.CENTER, Bitmap.Config.ARGB_8888, {
+                Toast.makeText(this, getString(R.string.request_problem), Toast.LENGTH_SHORT).show()
+            }).also {
+                DummyJSONAPI.getInstance(this).addToRequestQueue(it)
+            }
+        }
+
+    /* OLD MODE
     private fun retrieveProductImages(product: Product) = Thread {
         product.images.forEach { imageUrl ->
             val imageConnection = URL(imageUrl).openConnection() as HttpURLConnection
@@ -124,6 +154,6 @@ class MainActivity : AppCompatActivity() {
                 imageConnection.disconnect()
             }
         }
-    }.start()
+    }.start()*/
 
 }
