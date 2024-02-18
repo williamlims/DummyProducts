@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "br.edu.ifsp.scl.sdm.dummyproducts.app-mergeDebugResources-30:/layout/activity_main.xml",
+        "source": "br.edu.ifsp.scl.sdm.dummyproducts.app-main-33:/layout/activity_main.xml"
+    },
+    {
+        "merged": "br.edu.ifsp.scl.sdm.dummyproducts.app-mergeDebugResources-30:/layout/tile_product_image.xml",
+        "source": "br.edu.ifsp.scl.sdm.dummyproducts.app-main-33:/layout/tile_product_image.xml"
+    }
+]
